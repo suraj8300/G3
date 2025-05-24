@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Snakes and Ladders</title>
     <style>
         body {
@@ -11,18 +11,11 @@
         }
 
         .token {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            width: 30px;
+            height: 30px;
             position: absolute;
-        }
-
-        .player {
-            background-color: blue;
-        }
-
-        .bot {
-            background-color: red;
+            transition: left 0.3s ease, top 0.3s ease;
+            z-index: 10;
         }
 
         #controls {
@@ -41,6 +34,8 @@
             background-size: cover;
             margin: 0 auto;
             position: relative;
+            border: 2px solid #333;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
         .dice-placeholder {
@@ -66,7 +61,11 @@
 </head>
 <body>
     <h1>Snakes and Ladders</h1>
-    <div class="board-placeholder"></div>
+    <div class="board-placeholder">
+        <!-- Player tokens as images -->
+        <img id="player1Token" class="token" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Player 1">
+        <img id="player2Token" class="token" src="https://cdn-icons-png.flaticon.com/512/149/149065.png" alt="Player 2">
+    </div>
     <div id="controls">
         <div id="dice" class="dice-placeholder">🎲</div>
         <button id="rollDice">Roll Dice</button>
@@ -100,6 +99,28 @@
             return position;
         }
 
+        function getCoordinates(position) {
+            const size = 50; // size of each square in px
+            let row = Math.floor((position - 1) / 10);
+            let col = (position - 1) % 10;
+
+            // Alternate direction for every other row
+            if (row % 2 === 1) {
+                col = 9 - col;
+            }
+
+            const x = col * size;
+            const y = (9 - row) * size; // bottom row is y=0
+            return { x, y };
+        }
+
+        function moveToken(tokenId, position) {
+            const token = document.getElementById(tokenId);
+            const coords = getCoordinates(position);
+            token.style.left = `${coords.x}px`;
+            token.style.top = `${coords.y}px`;
+        }
+
         function playTurn() {
             const roll = rollDice();
             dicePlaceholder.textContent = roll;
@@ -116,6 +137,8 @@
                     playerPosition = updatePosition(playerPosition);
                 }
 
+                moveToken('player1Token', playerPosition);
+
                 if (playerPosition === 100) {
                     status.textContent = 'Player wins! Congratulations!';
                     rollDiceButton.disabled = true;
@@ -130,6 +153,8 @@
                     botPosition = updatePosition(botPosition);
                 }
 
+                moveToken('player2Token', botPosition);
+
                 if (botPosition === 100) {
                     status.textContent = 'Bot wins! Better luck next time!';
                     rollDiceButton.disabled = true;
@@ -139,6 +164,10 @@
 
             isPlayerTurn = !isPlayerTurn;
         }
+
+        // Initial token placement
+        moveToken('player1Token', playerPosition);
+        moveToken('player2Token', botPosition);
 
         rollDiceButton.addEventListener('click', () => {
             playTurn();
