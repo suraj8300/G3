@@ -10,27 +10,6 @@
             text-align: center;
         }
 
-        .board {
-            position: relative;
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            grid-template-rows: repeat(10, 1fr);
-            width: 500px;
-            height: 500px;
-            margin: 20px auto;
-            border: 2px solid black;
-            background-image: url('https://img.freepik.com/premium-vector/snakes-ladders-board-game_600323-2807.jpg'); /* Background board image */
-            background-size: cover;
-        }
-
-        .cell {
-            border: 1px solid black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
         .token {
             width: 20px;
             height: 20px;
@@ -54,13 +33,40 @@
             margin: 10px;
             font-size: 16px;
         }
+
+        .board-placeholder {
+            width: 500px;
+            height: 500px;
+            background-image: url('https://img.freepik.com/premium-vector/snakes-ladders-board-game_600323-2807.jpg');
+            background-size: cover;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .dice-placeholder {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dice-placeholder.animate {
+            transform: rotate(360deg);
+        }
     </style>
 </head>
 <body>
     <h1>Snakes and Ladders</h1>
-    <div class="board" id="board">
-        <!-- Board will be generated here dynamically -->
-    </div>
+    <div class="board-placeholder"></div>
     <div id="controls">
         <div id="dice" class="dice-placeholder">🎲</div>
         <button id="rollDice">Roll Dice</button>
@@ -68,7 +74,6 @@
     </div>
 
     <script>
-        const board = document.getElementById('board');
         const rollDiceButton = document.getElementById('rollDice');
         const status = document.getElementById('status');
         const dicePlaceholder = document.getElementById('dice');
@@ -79,30 +84,6 @@
         let playerPosition = 1;
         let botPosition = 1;
         let isPlayerTurn = true;
-
-        // Create board
-        for (let i = 100; i > 0; i--) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.textContent = i;
-            cell.id = `cell-${i}`;
-            board.appendChild(cell);
-        }
-
-        // Tokens
-        const playerToken = document.createElement('div');
-        playerToken.className = 'token player';
-
-        const botToken = document.createElement('div');
-        botToken.className = 'token bot';
-
-        document.getElementById('cell-1').appendChild(playerToken);
-        document.getElementById('cell-1').appendChild(botToken);
-
-        function moveToken(token, position) {
-            const currentCell = document.getElementById(`cell-${position}`);
-            currentCell.appendChild(token);
-        }
 
         function rollDice() {
             return Math.floor(Math.random() * 6) + 1;
@@ -121,19 +102,19 @@
 
         function playTurn() {
             const roll = rollDice();
-            dicePlaceholder.textContent = roll; // Show dice roll result
+            dicePlaceholder.textContent = roll;
+            dicePlaceholder.classList.add('animate');
+            setTimeout(() => dicePlaceholder.classList.remove('animate'), 300);
+
             status.textContent = `${isPlayerTurn ? 'Player' : 'Bot'} rolled a ${roll}.`;
 
             if (isPlayerTurn) {
                 playerPosition += roll;
-
                 if (playerPosition > 100) {
                     playerPosition -= roll;
                 } else {
                     playerPosition = updatePosition(playerPosition);
                 }
-
-                moveToken(playerToken, playerPosition);
 
                 if (playerPosition === 100) {
                     status.textContent = 'Player wins! Congratulations!';
@@ -143,14 +124,11 @@
 
             } else {
                 botPosition += roll;
-
                 if (botPosition > 100) {
                     botPosition -= roll;
                 } else {
                     botPosition = updatePosition(botPosition);
                 }
-
-                moveToken(botToken, botPosition);
 
                 if (botPosition === 100) {
                     status.textContent = 'Bot wins! Better luck next time!';
