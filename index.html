@@ -1,177 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Snakes and Ladders</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snakes and Ladders - Responsive</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-        .token {
-            width: 30px;
-            height: 30px;
-            position: absolute;
-            transition: left 0.3s ease, top 0.3s ease;
-            z-index: 10;
-        }
+    h1 {
+      margin: 10px 0;
+    }
 
-        #controls {
-            margin-top: 20px;
-        }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+    }
 
-        #status {
-            margin: 10px;
-            font-size: 16px;
-        }
+    .board-wrapper {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      background-image: url('https://img.freepik.com/premium-vector/snakes-ladders-board-game_600323-2807.jpg');
+      background-size: cover;
+      margin: 0 auto;
+    }
 
-        .board-placeholder {
-            width: 500px;
-            height: 500px;
-            background-image: url('https://img.freepik.com/premium-vector/snakes-ladders-board-game_600323-2807.jpg');
-            background-size: cover;
-            margin: 0 auto;
-            position: relative;
-            border: 2px solid #333;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
+    .token {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      position: absolute;
+      transition: transform 0.5s ease;
+    }
 
-        .dice-placeholder {
-            width: 100px;
-            height: 100px;
-            margin: 20px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 36px;
-            font-weight: bold;
-            background-color: #f0f0f0;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
+    .player {
+      background-color: blue;
+    }
 
-        .dice-placeholder.animate {
-            transform: rotate(360deg);
-        }
-    </style>
+    .bot {
+      background-color: red;
+    }
+
+    .dice-placeholder {
+      width: 100px;
+      height: 100px;
+      margin: 10px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      font-weight: bold;
+      background-color: #f0f0f0;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .bot-area,
+    .player-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 20px auto;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .board-wrapper {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Snakes and Ladders</h1>
-    <div class="board-placeholder">
-        <!-- Player tokens as images -->
-        <img id="player1Token" class="token" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Player 1">
-        <img id="player2Token" class="token" src="https://cdn-icons-png.flaticon.com/512/149/149065.png" alt="Player 2">
-    </div>
-    <div id="controls">
-        <div id="dice" class="dice-placeholder">🎲</div>
-        <button id="rollDice">Roll Dice</button>
-        <p id="status">Welcome to Snakes and Ladders!</p>
+  <h1>Snakes and Ladders</h1>
+
+  <div class="container">
+    <div class="bot-area">
+      <div id="botDice" class="dice-placeholder">🎲</div>
+      <div id="botStatus">Bot's Turn</div>
     </div>
 
-    <script>
-        const rollDiceButton = document.getElementById('rollDice');
-        const status = document.getElementById('status');
-        const dicePlaceholder = document.getElementById('dice');
+    <div class="board-wrapper" id="board">
+      <div class="token bot" id="botToken"></div>
+      <div class="token player" id="playerToken"></div>
+    </div>
 
-        const snakes = { 99: 77, 95: 75, 93: 69, 87: 24, 67: 30, 63: 19, 59: 17, 16: 7 };
-        const ladders = { 9: 27, 18: 37, 25: 54, 28: 51, 56: 64, 68: 88, 76: 97, 79: 100 };
+    <div class="player-area">
+      <div id="playerDice" class="dice-placeholder">🎲</div>
+      <div id="playerStatus">Player's Turn</div>
+    </div>
+  </div>
 
-        let playerPosition = 1;
-        let botPosition = 1;
-        let isPlayerTurn = true;
+  <button id="rollDice">Roll Dice</button>
+  <p id="status">Welcome to Snakes and Ladders!</p>
 
-        function rollDice() {
-            return Math.floor(Math.random() * 6) + 1;
+  <script>
+    const rollDiceButton = document.getElementById('rollDice');
+    const status = document.getElementById('status');
+
+    const playerDice = document.getElementById('playerDice');
+    const botDice = document.getElementById('botDice');
+
+    const playerStatus = document.getElementById('playerStatus');
+    const botStatus = document.getElementById('botStatus');
+
+    const playerToken = document.getElementById('playerToken');
+    const botToken = document.getElementById('botToken');
+
+    const snakes = { 99: 77, 95: 75, 93: 69, 87: 24, 67: 30, 63: 19, 59: 17, 16: 7 };
+    const ladders = { 9: 27, 18: 37, 25: 54, 28: 51, 56: 64, 68: 88, 76: 97, 79: 100 };
+
+    let playerPosition = 1;
+    let botPosition = 1;
+    let isPlayerTurn = true;
+    let gameOver = false;
+
+    const boardSize = 500;
+    const cellsPerRow = 10;
+    const cellSize = boardSize / cellsPerRow;
+
+    function getCoordinates(position) {
+      if (position < 1) position = 1;
+      if (position > 100) position = 100;
+
+      const row = Math.floor((position - 1) / cellsPerRow);
+      let col = (position - 1) % cellsPerRow;
+
+      if (row % 2 === 1) col = cellsPerRow - 1 - col;
+
+      const x = col * cellSize + cellSize / 2 - 12;
+      const y = boardSize - (row + 1) * cellSize + cellSize / 2 - 12;
+
+      return { x, y };
+    }
+
+    function moveToken(token, position) {
+      const { x, y } = getCoordinates(position);
+      token.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    function handleSnakeOrLadder(position) {
+      if (snakes[position]) {
+        status.innerHTML = `Oh no! Snake!`;
+        return snakes[position];
+      } else if (ladders[position]) {
+        status.innerHTML = `Yay! Ladder!`;
+        return ladders[position];
+      }
+      return position;
+    }
+
+    function checkWin(position, player) {
+      if (position === 100) {
+        gameOver = true;
+        status.innerHTML = `${player} wins!`;
+        rollDiceButton.disabled = true;
+      }
+    }
+
+    function rollDice() {
+      return Math.floor(Math.random() * 6) + 1;
+    }
+
+    function botTurn() {
+      setTimeout(() => {
+        const botRoll = rollDice();
+        botDice.innerHTML = botRoll;
+        status.innerHTML = `Bot rolled a ${botRoll}!`;
+
+        botPosition += botRoll;
+        botPosition = handleSnakeOrLadder(botPosition);
+        moveToken(botToken, botPosition);
+
+        checkWin(botPosition, 'Bot');
+
+        if (!gameOver) {
+          isPlayerTurn = true;
+          rollDiceButton.disabled = false;
+          playerStatus.style.fontWeight = 'bold';
+          botStatus.style.fontWeight = 'normal';
+          status.innerHTML = `Your turn!`;
         }
+      }, 1000); // Delay for bot's turn
+    }
 
-        function updatePosition(position) {
-            if (snakes[position]) {
-                status.textContent = `Oh no! A snake! Slide down to ${snakes[position]}.`;
-                return snakes[position];
-            } else if (ladders[position]) {
-                status.textContent = `Yay! A ladder! Climb up to ${ladders[position]}.`;
-                return ladders[position];
-            }
-            return position;
-        }
+    rollDiceButton.addEventListener('click', () => {
+      if (gameOver) return;
 
-        function getCoordinates(position) {
-            const size = 50; // size of each square in px
-            let row = Math.floor((position - 1) / 10);
-            let col = (position - 1) % 10;
+      const playerRoll = rollDice();
+      playerDice.innerHTML = playerRoll;
+      status.innerHTML = `You rolled a ${playerRoll}!`;
 
-            // Alternate direction for every other row
-            if (row % 2 === 1) {
-                col = 9 - col;
-            }
+      playerPosition += playerRoll;
+      playerPosition = handleSnakeOrLadder(playerPosition);
+      moveToken(playerToken, playerPosition);
 
-            const x = col * size;
-            const y = (9 - row) * size; // bottom row is y=0
-            return { x, y };
-        }
+      checkWin(playerPosition, 'Player');
 
-        function moveToken(tokenId, position) {
-            const token = document.getElementById(tokenId);
-            const coords = getCoordinates(position);
-            token.style.left = `${coords.x}px`;
-            token.style.top = `${coords.y}px`;
-        }
+      if (!gameOver) {
+        isPlayerTurn = false;
+        rollDiceButton.disabled = true;
+        playerStatus.style.fontWeight = 'normal';
+        botStatus.style.fontWeight = 'bold';
+        status.innerHTML = `Bot's turn...`;
+        botTurn();
+      }
+    });
 
-        function playTurn() {
-            const roll = rollDice();
-            dicePlaceholder.textContent = roll;
-            dicePlaceholder.classList.add('animate');
-            setTimeout(() => dicePlaceholder.classList.remove('animate'), 300);
-
-            status.textContent = `${isPlayerTurn ? 'Player' : 'Bot'} rolled a ${roll}.`;
-
-            if (isPlayerTurn) {
-                playerPosition += roll;
-                if (playerPosition > 100) {
-                    playerPosition -= roll;
-                } else {
-                    playerPosition = updatePosition(playerPosition);
-                }
-
-                moveToken('player1Token', playerPosition);
-
-                if (playerPosition === 100) {
-                    status.textContent = 'Player wins! Congratulations!';
-                    rollDiceButton.disabled = true;
-                    return;
-                }
-
-            } else {
-                botPosition += roll;
-                if (botPosition > 100) {
-                    botPosition -= roll;
-                } else {
-                    botPosition = updatePosition(botPosition);
-                }
-
-                moveToken('player2Token', botPosition);
-
-                if (botPosition === 100) {
-                    status.textContent = 'Bot wins! Better luck next time!';
-                    rollDiceButton.disabled = true;
-                    return;
-                }
-            }
-
-            isPlayerTurn = !isPlayerTurn;
-        }
-
-        // Initial token placement
-        moveToken('player1Token', playerPosition);
-        moveToken('player2Token', botPosition);
-
-        rollDiceButton.addEventListener('click', () => {
-            playTurn();
-        });
-    </script>
+    moveToken(playerToken, playerPosition);
+    moveToken(botToken, botPosition);
+  </script>
 </body>
 </html>
