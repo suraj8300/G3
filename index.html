@@ -19,7 +19,7 @@
             height: 500px;
             margin: 20px auto;
             border: 2px solid black;
-            background-image: url('https://example.com/board-background.png'); /* Placeholder for a background image */
+            background-image: url('board.avif'); /* Placeholder for a background image */
             background-size: cover;
         }
 
@@ -41,14 +41,18 @@
         }
 
         .snake {
-            background-color: rgba(255, 0, 0, 0.5);
-            width: 30px;
+            background-image: url('https://example.com/snake_placeholder.gif'); /* Placeholder for snake image */
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 50px;
             height: 200px;
         }
 
         .ladder {
-            background-color: rgba(0, 255, 0, 0.5);
-            width: 20px;
+            background-image: url('https://example.com/ladder_placeholder.gif'); /* Placeholder for ladder image */
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 40px;
             height: 180px;
         }
 
@@ -61,10 +65,33 @@
 
         .player {
             background-color: blue;
+            animation: glow 1s infinite alternate;
         }
 
         .bot {
             background-color: red;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px blue;
+            }
+            to {
+                box-shadow: 0 0 15px cyan;
+            }
+        }
+
+        .dice-placeholder {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto;
+            background-color: lightgray;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         #controls {
@@ -85,6 +112,7 @@
         <div class="ladder" style="top: 50%; left: 60%; transform: rotate(-30deg);"></div>
     </div>
     <div id="controls">
+        <div id="dice" class="dice-placeholder">🎲</div>
         <button id="rollDice">Roll Dice</button>
         <p id="status">Welcome to Snakes and Ladders!</p>
     </div>
@@ -93,6 +121,7 @@
         const board = document.getElementById('board');
         const rollDiceButton = document.getElementById('rollDice');
         const status = document.getElementById('status');
+        const dicePlaceholder = document.getElementById('dice');
 
         const snakes = { 16: 6, 47: 26, 49: 11, 56: 53, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 98: 78 };
         const ladders = { 1: 38, 4: 14, 9: 31, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 80: 100 };
@@ -142,6 +171,7 @@
 
         function playTurn() {
             const roll = rollDice();
+            dicePlaceholder.textContent = roll; // Show dice roll result
             status.textContent = `${isPlayerTurn ? 'Player' : 'Bot'} rolled a ${roll}.`;
 
             if (isPlayerTurn) {
